@@ -16,26 +16,20 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:main.CSStoJSS",
-		"onCommand:main.JSStoCSS"
+		"onCommand:main.JCSS"
 	],
 	"main": "./dist/extension.js",
 	"contributes": {
 		"commands": [
 			{
-				"command": "main.CSStoJSS",
-				"title": "CSStoJSS",
-				"category": "main"
-			},
-			{
-				"command": "main.JSStoCSS",
-				"title": "JSStoCSS",
+				"command": "main.JCSS",
+				"title": "JCSS",
 				"category": "main"
 			}
 		],
 		"keybindings": [
 			{
-				"command": "main.CSStoJSS",
+				"command": "main.JCSS",
 				"key": "ctrl+q",
 				"mac": "cmd+q",
 				"when": "editorTextFocus"
@@ -44,24 +38,14 @@
 		"menus": {
 			"editor/title": [
 				{
-					"command": "main.CSStoJSS",
-					"group": "navigation",
-					"when": "editorTextFocus"
-				},
-				{
-					"command": "main.JSStoCSS",
+					"command": "main.JCSS",
 					"group": "navigation",
 					"when": "editorTextFocus"
 				}
 			],
 			"editor/context": [
 				{
-					"command": "main.CSStoJSS",
-					"group": "navigation",
-					"when": "editorTextFocus"
-				},
-				{
-					"command": "main.JSStoCSS",
+					"command": "main.JCSS",
 					"group": "navigation",
 					"when": "editorTextFocus"
 				}
