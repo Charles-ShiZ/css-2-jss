@@ -64,9 +64,10 @@ Object.defineProperty(exports, "__esModule", ({ value: true }));
 const vscode = __webpack_require__(1);
 const externals = ['family'];
 class EditSelectedCode {
+    // private specialAttrs = ['font-family'];
     constructor(activeTextEditor) {
-        this.cssMatcher = /([-a-z]+):( *)(\w+)([,;]?)/g; // 匹配css代码
-        this.jssMatcher = /(^|\n| )([a-zA-Z]+):( *)(["'`]\w+["'`])([,;]?)/g; // 匹配jss代码
+        this.cssMatcher = /([-a-z]+):( *)([\w.\- (,+)%]+)([;\n]?)/g; // 匹配css代码
+        this.jssMatcher = /(^|\n| )([a-zA-Z]+):( *)(["'`][\w(, .%\-)]+["'`])([,;]?)/g; // 匹配jss代码
         this.sheetBlocks = [];
         this.activeTextEditor = activeTextEditor;
         const document = this.document = activeTextEditor.document;

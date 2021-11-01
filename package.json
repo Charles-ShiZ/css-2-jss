@@ -2,7 +2,7 @@
 	"publisher": "shizhanhong",
 	"name": "css-to-jss",
 	"displayName": "CSS 2 JSS",
-	"description": "转化CSS为JSS（JSS，即Javascript Style Sheet）或者 转化JSS为CSS",
+	"description": "css与jss互转（JSS，即Javascript Style Sheet）",
 	"version": "0.1.0",
 	"icon": "img/icon.png",
 	"engines": {
@@ -23,7 +23,7 @@
 		"commands": [
 			{
 				"command": "main.JCSS",
-				"title": "JCSS",
+				"title": "互转",
 				"category": "main"
 			}
 		],

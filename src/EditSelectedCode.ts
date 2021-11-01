@@ -16,9 +16,10 @@ export default class EditSelectedCode {
   private selectedCodeStartAt: number; // 选中的代码在文件中的起点
   private selectedCodeEndAt: number; // 选中的代码在文件中的终点
   private selectedCode: string; // 选中的代码
-  private cssMatcher = /([-a-z]+):( *)(\w+)([,;]?)/g; // 匹配css代码
-  private jssMatcher = /(^|\n| )([a-zA-Z]+):( *)(["'`]\w+["'`])([,;]?)/g; // 匹配jss代码
+  private cssMatcher = /([-a-z]+):( *)([\w.\- (,+)%]+)([;\n]?)/g; // 匹配css代码
+  private jssMatcher = /(^|\n| )([a-zA-Z]+):( *)(["'`][\w(, .%\-)]+["'`])([,;]?)/g; // 匹配jss代码
   private sheetBlocks: SheetBlock[] = [];
+  // private specialAttrs = ['font-family'];
   constructor(activeTextEditor: vscode.TextEditor) {
     this.activeTextEditor = activeTextEditor;
     const document = this.document = activeTextEditor.document;
