@@ -16,8 +16,10 @@ export default class EditSelectedCode {
   private selectedCodeStartAt: number; // 选中的代码在文件中的起点
   private selectedCodeEndAt: number; // 选中的代码在文件中的终点
   private selectedCode: string; // 选中的代码
-  private cssMatcher = /([-a-z]+):( *)([\w.\- (,+)%]+)([;\n]?)/g; // 匹配css代码
-  private jssMatcher = /(^|\n| )([a-zA-Z]+):( *)(["'`][\w(, .%\-)]+["'`])([,;]?)/g; // 匹配jss代码
+  private cssMatcher = /(|\n| )([-a-z]+):([^;]*);/g; // 匹配css代码 简易版本
+  // private cssMatcher = /(^|\n| )([-a-z]+):( *)([\w.\- (,+)%#]+)([;\n]?)/g; // 匹配css代码 复杂版本
+  private jssMatchers = [/(|\n| )([a-zA-Z]+):( *)"(.*)",/g, /(|\n| )([a-zA-Z]+):([^,"']*),/g]; // 匹配jss代码 简易版本
+  // private jssMatcher = /(^|\n| )([a-zA-Z]+):( *)(["'`]?[\w(, .%\-)]+["'`]?)([,;]?)/g; // 匹配jss代码 复杂版本
   private sheetBlocks: SheetBlock[] = [];
   // private specialAttrs = ['font-family'];
   constructor(activeTextEditor: vscode.TextEditor) {
@@ -37,26 +39,43 @@ export default class EditSelectedCode {
 
   match() {
     const type: "jss" | "css" = (() => {
-      const jssSheets = this.selectedCode.match(this.jssMatcher) || [];
+      const jssSheets = (() => {
+        let result: string[] = [];
+        this.jssMatchers.forEach(matcher => {
+          result = [...result, ...this.selectedCode.match(matcher) || []];
+        });
+        return result;
+      })();
       const cssSheets = this.selectedCode.match(this.cssMatcher) || [];
       return jssSheets.length > cssSheets.length ? 'jss' : 'css';
     })();
 
     return (() => {
-      let matched;
       this.sheetBlocks = [];
-      while ((matched = this[`${type}Matcher`].exec(this.selectedCode)) !== null) {
-        this.sheetBlocks.push({
-          value: matched[0],
-          startAt: matched.index,
-          endAt: matched.index + matched[0].length
-        });
+      if (type === 'jss') {
+        this.jssMatchers.forEach(
+          matcher =>
+            this.matchWhile(matcher)
+        );
+      } else {
+        this.matchWhile(this.cssMatcher);
       }
       return {
         type,
         value: this.sheetBlocks
       };
     })();
+  }
+
+  private matchWhile(matcher: RegExp) {
+    let matched;
+    while ((matched = matcher.exec(this.selectedCode)) !== null) {
+      this.sheetBlocks.push({
+        value: matched[0],
+        startAt: matched.index,
+        endAt: matched.index + matched[0].length
+      });
+    }
   }
 
   private transform(type: 'css' | 'jss') {
@@ -78,7 +97,10 @@ export default class EditSelectedCode {
       key = key.replace(/[A-Z]/g, (word) => {
         return '-' + word.toLowerCase();
       });
-      value = value.trim().replace(/["|']/g, "").replace(/[;|,]$/, '');
+      value = value
+        .trim()
+        .replace(/^("|')|("|')(?=,$)/g, "")
+        .replace(/,$/, '');
       newCode = this.stringSplice.call(newCode, item.startAt, item.endAt, `${key}:${value};`);
     }
     return newCode;
@@ -103,7 +125,7 @@ export default class EditSelectedCode {
           }
         }).join('');
       })();
-      value = value.trim().replace(/"/g, "'").replace(/[;|,]$/, '');
+      value = value.trim().replace(/"/g, "'").replace(/;$/, '');
       newCode = this.stringSplice.call(newCode, item.startAt, item.endAt, `${key}:"${value}",`);
     }
     return newCode;
